@@ -1,0 +1,14 @@
+- apt: name=ruby state=present
+- apt: name=ruby-bundler state=present
+- user: name=sinatra shell=/bin/false
+- name: "Run bundle install"
+  command: bundle install --path=vendor --gemfile=/app/Gemfile
+  args:
+    creates: /app/vendor
+    sudo_user: sinatra
+- template: src=upstart/sinatra.conf.j2 dest=/etc/init/sinatra.conf
+- template: src=consul/sinatra.json.j2 dest=/etc/consul.d/sinatra.json
+  notify:
+    - restart consul
+- template: src=check-sinatra.j2 dest=/usr/local/bin/check-sinatra mode=0755
+- service: name=sinatra state=started enabled=yes

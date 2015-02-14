@@ -1,0 +1,11 @@
+description "Consul client process"
+
+start on (local-filesystems and net-device-up IFACE!=lo0)
+stop on runlevel [!12345]
+
+respawn
+
+setuid consul
+setgid consul
+
+exec consul agent -server -data-dir /var/consul -ui-dir /opt/consul-ui

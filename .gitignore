@@ -1,0 +1,3 @@
+app/.vagrant/
+app/vendor/
+ops/ansible/vendor/

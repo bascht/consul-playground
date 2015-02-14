@@ -1,0 +1,77 @@
+---
+- hosts: 'app'
+  sudo: true
+  roles:
+    - role: sinatra
+    - role: savagegus.consul
+      consul_is_server: true
+      consul_is_ui: false
+      consul_version: 0.4.1
+      consul_datacenter: 'keller'
+      consul_bind_address: "{{ ansible_eth1['ipv4']['address'] }}"
+      consul_node_name: "{{ ansible_hostname }}"
+  tasks:
+    - name: "Join Consul"
+      command: "/opt/consul/bin/consul join 172.20.10.10"
+      
+- hosts: 'web'
+  sudo: true
+  tasks:
+  roles:
+    - role: savagegus.consul
+      consul_is_server: true
+      consul_is_ui: true
+      consul_version: 0.4.1
+      consul_enable_nginx_config: false
+      consul_datacenter: 'keller'
+      consul_bootstrap_expect: 1
+      consul_node_name: "{{ ansible_hostname }}"
+      consul_bind_address: "{{ ansible_eth1['ipv4']['address'] }}"
+    - role: debops.nginx
+      nginx_upstreams: [ ]
+      nginx_servers: [ '{{ nginx_server_consul }}', '{{ nginx_server_sinatra }}' ]
+ 
+  vars:
+    ferm: false
+    nginx_pki: false
+    nginx_server_consul:
+      enabled: True
+      name: [ 'consul.local' ]
+      root: '/var/www/consul/htdocs'
+      default: True
+      listen: ['*:8080', '[::]:8080']
+      location:
+        '/': |
+          proxy_pass http://127.0.0.1:8500;
+    nginx_server_sinatra:
+      enabled: True
+      default: True
+      name: [ 'sinatra.local' ]
+      root: '/app'
+      listen: ['*:80', '[::]:80']
+      location:
+        '/': |
+          proxy_pass http://frontend;
+      
+- hosts: 'db-1'
+  sudo: true
+  vars:
+    redis_service_tags: ['master']
+- hosts: 'db'
+  sudo: true
+  vars:
+    ferm: false
+    redis_bind: ["0.0.0.0"]
+  roles:
+    - role: savagegus.consul
+      consul_is_server: true
+      consul_is_ui: false
+      consul_version: 0.4.1
+      consul_datacenter: 'keller'
+      consul_bind_address: "{{ ansible_eth1['ipv4']['address'] }}"
+      consul_node_name: "{{ ansible_hostname }}"
+    - role: database
+  tasks:
+    - name: "Join Consul"
+      command: "/opt/consul/bin/consul join 172.20.10.10"
+

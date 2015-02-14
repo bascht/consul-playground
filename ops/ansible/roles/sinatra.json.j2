@@ -1,0 +1,11 @@
+{
+  "service": {
+    "name": "sinatra",
+    "tags": ["fancy"],
+    "port": 4567,
+    "check": {
+      "script": "/usr/local/bin/check-sinatra",
+      "interval": "10s"
+    }
+  }
+}

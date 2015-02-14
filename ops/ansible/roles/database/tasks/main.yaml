@@ -1,0 +1,7 @@
+- template: src=redis.json.j2 dest=/etc/consul.d/redis.json
+  notify:
+    - restart consul
+- template: src=check-redis.j2 dest=/usr/local/bin/check-redis mode=0755
+#- apt: name=redis-server state=present
+#- name: Start Redis Server
+#  service: name=redis-server state=started enabled=yes

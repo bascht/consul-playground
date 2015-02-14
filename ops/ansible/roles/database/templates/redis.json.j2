@@ -1,0 +1,11 @@
+{
+  "service": {
+    "name": "redis",
+    "tags": ["{{ redis_service_tags | default(['slave']) | join(", ") }}"],
+    "port": 6453,
+    "check": {
+      "script": "/usr/local/bin/check-redis",
+      "interval": "10s"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+- src: debops.nginx
+- src: savagegus.consul
+- src: debops.redis
+- src: info.haproxy
