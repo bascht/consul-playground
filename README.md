@@ -1,6 +1,6 @@
 # Consul 3-tier Demo
 
-Give [Consul][http://consul.io] a try using a small stack with local
+Give [Consul](http://consul.io) a try using a small stack with local
 Vagrant machines:
 
 * one HTTP load balancer
@@ -19,3 +19,7 @@ Vagrant machines:
 $ ansible-galaxy install -r ops/ansible/requirements.yaml -p ops/ansible/vendor/roles/ --force
 $ vagrant up
 ```
+
+### Screenshot
+
+![Screenshot](http://i.imgur.com/f5xa5dJ.png)
